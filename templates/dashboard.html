@@ -1,0 +1,19 @@
+<h2>Welcome {{session['user']}}</h2>
+
+<h3>Total: {{total}}</h3>
+<h3>Resolved: {{resolved}}</h3>
+<h3>Pending: {{pending}}</h3>
+
+<a href="/complaint">Add Complaint</a> |
+<a href="/logout">Logout</a>
+
+{% for c in complaints %}
+<div class="card p-3 mb-2 shadow">
+  <b>Category:</b> {{c[2]}} <br>
+  <b>Description:</b> {{c[3]}} <br>
+  <b>Location:</b> {{c[4]}} <br>
+  <b>Priority:</b> {{c[5]}} <br>
+  <b>Date:</b> {{c[6]}} <br>
+  <b>Status:</b> {{c[7]}}
+</div>
+{% endfor %}
