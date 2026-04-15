@@ -1,19 +1,166 @@
-<h2>Welcome {{session['user']}}</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Dashboard | Cloud Complaint System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .navbar-glass {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            text-align: center;
+        }
+        .stat-card:hover { transform: translateY(-5px); }
+        .stat-value { font-size: 2.5rem; font-weight: 800; }
+        .complaint-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border-left: 4px solid #667eea;
+        }
+        .complaint-card:hover {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+            transform: translateX(5px);
+        }
+        .btn-add {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 50px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+        }
+        .btn-add:hover { transform: translateY(-2px); }
+        .welcome-text {
+            background: white;
+            border-radius: 20px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+    </style>
+</head>
+<body>
 
-<h3>Total: {{total}}</h3>
-<h3>Resolved: {{resolved}}</h3>
-<h3>Pending: {{pending}}</h3>
+<nav class="navbar-glass">
+    <div class="container">
+        <span class="navbar-brand">
+            <i class="fas fa-cloud-upload-alt me-2"></i>
+            Cloud Complaint System
+        </span>
+        <div class="d-flex align-items-center">
+            <span class="text-muted me-3">
+                <i class="fas fa-user me-1"></i>
+                {{ session['user'] }}
+            </span>
+            <a href="/logout" class="btn btn-danger btn-sm">
+                <i class="fas fa-sign-out-alt me-1"></i>Logout
+            </a>
+        </div>
+    </div>
+</nav>
 
-<a href="/complaint">Add Complaint</a> |
-<a href="/logout">Logout</a>
-
-{% for c in complaints %}
-<div class="card p-3 mb-2 shadow">
-  <b>Category:</b> {{c[2]}} <br>
-  <b>Description:</b> {{c[3]}} <br>
-  <b>Location:</b> {{c[4]}} <br>
-  <b>Priority:</b> {{c[5]}} <br>
-  <b>Date:</b> {{c[6]}} <br>
-  <b>Status:</b> {{c[7]}}
+<div class="container">
+    <div class="welcome-text">
+        <h4 class="mb-0">
+            <i class="fas fa-tachometer-alt me-2" style="color: #667eea;"></i>
+            Welcome, {{ session['user'] }}!
+        </h4>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-4">
+            <div class="stat-card">
+                <i class="fas fa-ticket-alt fa-2x mb-2" style="color: #667eea;"></i>
+                <div class="stat-value">{{ total }}</div>
+                <div class="stat-label text-muted">Total Complaints</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card">
+                <i class="fas fa-check-circle fa-2x mb-2" style="color: #28a745;"></i>
+                <div class="stat-value">{{ resolved }}</div>
+                <div class="stat-label text-muted">Resolved</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card">
+                <i class="fas fa-clock fa-2x mb-2" style="color: #ffc107;"></i>
+                <div class="stat-value">{{ pending }}</div>
+                <div class="stat-label text-muted">Pending</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="text-white mb-0">
+            <i class="fas fa-list me-2"></i>My Complaints
+        </h4>
+        <a href="/complaint" class="btn btn-add text-white">
+            <i class="fas fa-plus me-2"></i>Add New Complaint
+        </a>
+    </div>
+    
+    {% for c in complaints %}
+    <div class="complaint-card">
+        <div class="row">
+            <div class="col-md-8">
+                <h5 class="mb-2">{{ c[2] }}</h5>
+                <p class="text-muted mb-2">{{ c[3] }}</p>
+                <div class="mb-2">
+                    <span class="badge bg-secondary me-2">
+                        <i class="fas fa-map-marker-alt me-1"></i>{{ c[4] }}
+                    </span>
+                    <span class="badge {% if c[5] == 'High' %}bg-danger{% elif c[5] == 'Medium' %}bg-warning{% else %}bg-success{% endif %}">
+                        <i class="fas fa-flag me-1"></i>{{ c[5] }} Priority
+                    </span>
+                    <span class="badge {% if c[7] == 'Resolved' %}bg-success{% else %}bg-warning{% endif %}">
+                        <i class="fas {% if c[7] == 'Resolved' %}fa-check-circle{% else %}fa-clock{% endif %} me-1"></i>{{ c[7] }}
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <small class="text-muted">
+                    <i class="fas fa-calendar-alt me-1"></i>{{ c[6] }}
+                </small>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="complaint-card text-center">
+        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+        <h5 class="text-muted">No complaints yet</h5>
+        <p class="text-muted">Click "Add New Complaint" to submit your first complaint</p>
+    </div>
+    {% endfor %}
 </div>
-{% endfor %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

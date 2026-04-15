@@ -1,35 +1,321 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Admin Panel</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | Cloud Complaint System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding-bottom: 2rem;
+        }
+        .navbar-glass {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            text-align: center;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.25rem;
+        }
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .complaint-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border-left: 4px solid;
+        }
+        .complaint-card:hover {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+            transform: translateX(5px);
+        }
+        .priority-High {
+            border-left-color: #dc3545;
+        }
+        .priority-Medium {
+            border-left-color: #ffc107;
+        }
+        .priority-Low {
+            border-left-color: #28a745;
+        }
+        .badge-custom {
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 0.75rem;
+        }
+        .filter-bar {
+            background: white;
+            border-radius: 15px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+        .search-box {
+            position: relative;
+        }
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+        .search-box input {
+            padding-left: 45px;
+            border-radius: 50px;
+            border: 1px solid #dee2e6;
+            height: 45px;
+        }
+        .btn-action {
+            border-radius: 10px;
+            padding: 0.5rem 1.25rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .btn-action:hover {
+            transform: translateY(-2px);
+        }
+        .logout-btn {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            border: none;
+            border-radius: 50px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 600;
+            color: white;
+            text-decoration: none;
+        }
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            color: white;
+        }
+        @media (max-width: 768px) {
+            .stat-value {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
 </head>
-
 <body>
 
-<div class="container mt-5">
-  <h2>Admin Panel</h2>
-
-  <a href="/logout" class="btn btn-danger mb-3">Logout</a>
-
-  {% for c in complaints %}
-    <div class="card p-3 mb-2 shadow">
-
-      <b>User:</b> {{c[1]}} <br>
-      <b>Category:</b> {{c[2]}} <br>
-      <b>Description:</b> {{c[3]}} <br>
-      <b>Location:</b> {{c[4]}} <br>
-      <b>Priority:</b> {{c[5]}} <br>
-      <b>Date:</b> {{c[6]}} <br>
-      <b>Status:</b> {{c[7]}} <br><br>
-
-      <a href="/update_status/{{c[0]}}/Resolved" class="btn btn-success btn-sm">Resolved</a>
-      <a href="/update_status/{{c[0]}}/Pending" class="btn btn-warning btn-sm">Pending</a>
-
+<nav class="navbar-glass">
+    <div class="container">
+        <span class="navbar-brand">
+            <i class="fas fa-cloud-upload-alt me-2"></i>
+            Cloud Complaint System
+        </span>
+        <div class="d-flex align-items-center">
+            <span class="text-muted me-3">
+                <i class="fas fa-user-shield me-1"></i>
+                Admin
+            </span>
+            <a href="/logout" class="logout-btn">
+                <i class="fas fa-sign-out-alt me-2"></i>Logout
+            </a>
+        </div>
     </div>
-  {% endfor %}
+</nav>
 
+<div class="container">
+    <!-- Statistics Cards -->
+    <div class="row">
+        <div class="col-md-3">
+            <div class="stat-card">
+                <i class="fas fa-ticket-alt fa-2x mb-2" style="color: #667eea;"></i>
+                <div class="stat-value">{{ complaints|length }}</div>
+                <div class="stat-label">Total Complaints</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <i class="fas fa-clock fa-2x mb-2" style="color: #ffc107;"></i>
+                <div class="stat-value" id="pendingCount">0</div>
+                <div class="stat-label">Pending</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <i class="fas fa-check-circle fa-2x mb-2" style="color: #28a745;"></i>
+                <div class="stat-value" id="resolvedCount">0</div>
+                <div class="stat-label">Resolved</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <i class="fas fa-chart-line fa-2x mb-2" style="color: #17a2b8;"></i>
+                <div class="stat-value" id="resolutionRate">0%</div>
+                <div class="stat-label">Resolution Rate</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+        <div class="row">
+            <div class="col-md-6 mb-3 mb-md-0">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search by user, category, or description...">
+                </div>
+            </div>
+            <div class="col-md-3 mb-3 mb-md-0">
+                <select id="priorityFilter" class="form-select">
+                    <option value="all">All Priorities</option>
+                    <option value="High">High Priority</option>
+                    <option value="Medium">Medium Priority</option>
+                    <option value="Low">Low Priority</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select id="statusFilter" class="form-select">
+                    <option value="all">All Status</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Resolved">Resolved</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-12">
+            <div id="complaintsList">
+                {% for c in complaints %}
+                <div class="complaint-card priority-{{c[5]}}" data-priority="{{c[5]}}" data-status="{{c[7]}}" data-search="{{c[1]}} {{c[2]}} {{c[3]}}">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-2">
+                                <span class="badge-custom bg-light me-2">
+                                    <i class="fas fa-user me-1"></i>{{c[1]}}
+                                </span>
+                                <span class="badge-custom bg-light">
+                                    <i class="fas fa-map-marker-alt me-1"></i>{{c[4]}}
+                                </span>
+                            </div>
+                            <h5 class="mb-2">{{c[2]}}</h5>
+                            <p class="text-muted mb-2">{{c[3]}}</p>
+                            <div class="mb-2">
+                                <span class="badge-custom {% if c[5] == 'High' %}bg-danger text-white{% elif c[5] == 'Medium' %}bg-warning text-dark{% else %}bg-success text-white{% endif %}">
+                                    <i class="fas fa-flag me-1"></i>{{c[5]}} Priority
+                                </span>
+                                <span class="badge-custom {% if c[7] == 'Resolved' %}bg-success text-white{% else %}bg-warning text-dark{% endif %}">
+                                    <i class="fas {% if c[7] == 'Resolved' %}fa-check-circle{% else %}fa-clock{% endif %} me-1"></i>{{c[7]}}
+                                </span>
+                            </div>
+                            <small class="text-muted">
+                                <i class="fas fa-calendar-alt me-1"></i>{{c[6]}}
+                            </small>
+                        </div>
+                        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                            <a href="/update_status/{{c[0]}}/Resolved" class="btn btn-success btn-sm btn-action me-2" onclick="return confirm('Mark this complaint as resolved?')">
+                                <i class="fas fa-check me-1"></i>Resolved
+                            </a>
+                            <a href="/update_status/{{c[0]}}/Pending" class="btn btn-warning btn-sm btn-action" onclick="return confirm('Mark this complaint as pending?')">
+                                <i class="fas fa-hourglass-half me-1"></i>Pending
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            {% if complaints|length == 0 %}
+            <div class="complaint-card text-center">
+                <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">No complaints found</h5>
+                <p class="text-muted">Complaints submitted by students will appear here</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
 </div>
 
+<script>
+    // Calculate statistics from complaints data
+    const complaints = {{ complaints | tojson }};
+    
+    let pending = 0;
+    let resolved = 0;
+    
+    for (let i = 0; i < complaints.length; i++) {
+        if (complaints[i][7] === 'Pending') {
+            pending++;
+        } else if (complaints[i][7] === 'Resolved') {
+            resolved++;
+        }
+    }
+    
+    document.getElementById('pendingCount').innerText = pending;
+    document.getElementById('resolvedCount').innerText = resolved;
+    
+    let resolutionRate = 0;
+    if (complaints.length > 0) {
+        resolutionRate = Math.round((resolved / complaints.length) * 100);
+    }
+    document.getElementById('resolutionRate').innerText = resolutionRate + '%';
+    
+    // Search and Filter Function
+    function filterComplaints() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const priorityFilter = document.getElementById('priorityFilter').value;
+        const statusFilter = document.getElementById('statusFilter').value;
+        
+        const cards = document.querySelectorAll('.complaint-card');
+        
+        for (let card of cards) {
+            const searchText = card.getAttribute('data-search').toLowerCase();
+            const priority = card.getAttribute('data-priority');
+            const status = card.getAttribute('data-status');
+            
+            const matchesSearch = searchTerm === '' || searchText.includes(searchTerm);
+            const matchesPriority = priorityFilter === 'all' || priority === priorityFilter;
+            const matchesStatus = statusFilter === 'all' || status === statusFilter;
+            
+            if (matchesSearch && matchesPriority && matchesStatus) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        }
+    }
+    
+    // Add event listeners
+    document.getElementById('searchInput').addEventListener('input', filterComplaints);
+    document.getElementById('priorityFilter').addEventListener('change', filterComplaints);
+    document.getElementById('statusFilter').addEventListener('change', filterComplaints);
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
